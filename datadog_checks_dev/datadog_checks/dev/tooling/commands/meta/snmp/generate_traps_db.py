@@ -106,7 +106,7 @@ def generate_traps_db(mib_sources, output_dir, output_file, output_format, no_de
     from pysmi.codegen import JsonCodeGen
     from pysmi.compiler import MibCompiler
     from pysmi.parser import SmiV1CompatParser
-    from pysmi.reader import getReadersFromUrls
+    from pysmi.reader import get_readers_from_urls
     from pysmi.searcher import AnyFileSearcher
     from pysmi.writer import FileWriter
 
@@ -144,12 +144,12 @@ def generate_traps_db(mib_sources, output_dir, output_file, output_format, no_de
         mib_sources = sorted({pathlib.Path(x).parent.as_uri() for x in mib_files if os.path.sep in x}) + mib_sources
 
         mib_files = [os.path.basename(x) for x in mib_files]
-        searchers = [AnyFileSearcher(compiled_mibs_sources).setOptions(exts=['.json'])]
+        searchers = [AnyFileSearcher(compiled_mibs_sources).set_options(exts=['.json'])]
         code_generator = JsonCodeGen()
-        file_writer = FileWriter(compiled_mibs_sources).setOptions(suffix='.json')
+        file_writer = FileWriter(compiled_mibs_sources).set_options(suffix='.json')
         mib_compiler = MibCompiler(SmiV1CompatParser(tempdir=''), code_generator, file_writer)
-        mib_compiler.addSources(*getReadersFromUrls(*mib_sources, **{'fuzzyMatching': True}))
-        mib_compiler.addSearchers(*searchers)
+        mib_compiler.add_sources(*get_readers_from_urls(*mib_sources, fuzzy_matching=True))
+        mib_compiler.add_searchers(*searchers)
 
         compiled_mibs, compiled_dependencies_mibs = compile_and_report_status(mib_files, mib_compiler)
 
